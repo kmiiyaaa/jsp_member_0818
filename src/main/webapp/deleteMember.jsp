@@ -11,7 +11,7 @@
 		<hr>
 		<form action="deleteMemberOk.jsp">
 			아이디 : <input type="text" name="deletedid">
-			<input type="subm"
+			<input type="submit" value="삭제하기">
 		</form>
 
 </body>

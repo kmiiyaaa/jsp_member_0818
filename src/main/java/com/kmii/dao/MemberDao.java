@@ -25,6 +25,8 @@ public class MemberDao {
 	public static final int LOGIN_FAIL = 0;
 	public static final int MEMBER_ID_EXISTENT = 1;
 	public static final int MEMBER_ID_NONE = 0;
+	public static final int MEMBER_DELETE_OK = 1;
+	public static final int MEMBER_DELETE_NO = 0;
 	
 	public int insertMember(MemberDto memberDto) {  // 회원 가입 메서드, ()안에 매개변수 잊지말기
 		
@@ -177,8 +179,58 @@ public class MemberDao {
 			
 	
 	
-	
-	
 	}
+
+	
+	public int deleteId(String id) {
+		String sql = "SELECT * FROM membertbl WHERE memberid = ?";
+		
+		int result = 0;
+		
+		try {
+			Class.forName(driverName); 
+			conn = DriverManager.getConnection(url, userName, password);
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, id); 
+			
+		
+			rs = pstmt.executeQuery();  // 성공하면 sqlResult값이 1로 변환
+			
+			if(rs.next()) { // 아이디 탈퇴 가능
+				result = MEMBER_DELETE_OK;
+				
+			} else { // 아이디 탈퇴 불가능
+				result = MEMBER_DELETE_NO;
+			}
+		 
+			
+		} catch (Exception e) {
+			System.out.println("db 에러 발생, 로그인 체크 실패!"); 
+			e.printStackTrace();  //에러 내용 출력
+			
+		} finally {  // finally : 에러 유무와 상관없이 무조건 실행할 내용 입력 -> 여기선 에러와 상관없이 커넥션 닫기
+			try {
+				if(rs != null) {
+					rs.close();
+				}
+				
+				if(pstmt != null){  // stmt가 null이 아니면 닫기 --- conn보다 먼저 닫아야한다
+					pstmt.close();
+				}
+				
+				if(conn != null) {  // 커넥션이 null값이 아닐때만 닫기
+					conn.close();
+				}
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+			
+		
+		return result;  // 1로 반환되면 아이디 탈퇴 가능. 0은 불가능
+		
+	}
+	
 	
 }
